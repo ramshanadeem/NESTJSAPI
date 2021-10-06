@@ -44,6 +44,11 @@ export class ProductService{
         }
         this.products[index]=updatedProduct;
        }
+       deleteProduct(productId:string)
+       {
+         const index= this.findProduct(productId)[1]
+         this.products.splice(index,1)
+       }
     //[product, number ] this is define the return type of that product 
     private  findProduct(id:string): [Product,number]
     {
