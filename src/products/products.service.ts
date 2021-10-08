@@ -32,48 +32,61 @@ export class ProductService{
         //its a find funct given by mongoose
        const products=await this.ProductModel.find().exec();
       
-        return products as Product[];
+        return products.map(prod=>({
+            id:prod.id,
+            title:prod.title,
+            desc:prod.desc,
+            price:prod.price
+        }));
     }
-//     getSingleProducts(productId:string)
-//     {
+   async getSingleProducts(productId:string)
+    {
    
-//     const product= this.findProduct(productId)[0];
-//     return{...product};
-//     }
-//     updateProduct(productId:string, title:string, desc:string, price:number)
-//     {
-//         const [product,index]= this.findProduct(productId);
-//         const updatedProduct={...product}
-//         if(title)
-//         {
-//             updatedProduct.title=title ;
-//         }
-//         if(desc)
-//         {
-//             updatedProduct.desc=desc ;
-//         }
-//         if(price)
-//         {
-//             updatedProduct.price=price ;
-//         }
-//         this.products[index]=updatedProduct;
-//        }
-//        deleteProduct(productId:string)
-//        {
-//          const index= this.findProduct(productId)[1]
-//          this.products.splice(index,1)
-//        }
+    const product=await this.findProduct(productId);
+    return product;
+    }
+ async updateProduct(productId:string, title:string, desc:string, price:number)
+    {
+        const updatedProduct= await this.findProduct(productId);
+        
+        if(title)
+        {
+            updatedProduct.title=title ;
+        }
+        if(desc)
+        {
+            updatedProduct.desc=desc ;
+        }
+        if(price)
+        {
+            updatedProduct.price=price ;
+        }
+        updatedProduct.save()
+       }
+      async deleteProduct(productId:string)
+       {
+         await this.ProductModel.deleteOne({id:productId}).exec();
+     
+       }
 //     //[product, number ] this is define the return type of that product 
-//     private  findProduct(id:string): [Product,number]
-//     {
-//    const productIndex = this.products.findIndex(prod=>prod.id===id)
-//    const product= this.products[productIndex];
-//     if(!product){
-//          throw new NotFoundException('could not find product');
-//     }
-    
-//     return [product,productIndex];
-//     }
+    private async findProduct(id:string): Promise<Product>
+    {
+        let product;
+        try {
+             product = await this.ProductModel.findById(id);
+        } catch (error) {
+            if(!product){
+                throw new NotFoundException('could not find product');
+           }
+        }
+    return product;
+    // {
+        // id: product.id, 
+        // title:product.title,
+        // desc:product.desc,
+        // price:product.price
+       // };
+    }
 
   
 }
